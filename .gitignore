@@ -1,3 +1,10 @@
+# Qt-Creator project files
+DatasetCreator.config
+DatasetCreator.creator
+DatasetCreator.creator.user
+DatasetCreator.files
+DatasetCreator.includes
+
 # Compiled Object files
 *.slo
 *.lo
