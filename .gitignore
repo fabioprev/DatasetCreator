@@ -5,6 +5,13 @@ DatasetCreator.creator.user
 DatasetCreator.files
 DatasetCreator.includes
 
+# Compilation
+bin
+build
+
+# Xml
+xml
+
 # Compiled Object files
 *.slo
 *.lo
