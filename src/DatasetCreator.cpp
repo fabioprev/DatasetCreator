@@ -79,7 +79,7 @@ void DatasetCreator::doMouseCallback(int event, int x, int y)
 		
 		map<int,pair<int,pair<int,int> > >::iterator colorTrack = trackColorMap.find(currentTrackIndex);
 		
-		rectangle(currentTrajectoryImage,Rect(x - (currentWidth / 2),y - (currentHeight / 2),currentWidth,currentHeight),cvScalar(colorTrack->second.first,colorTrack->second.second.first,colorTrack->second.second.second),2);
+		rectangle(currentTrajectoryImage,Rect(x - (currentWidth / 2),y - currentHeight,currentWidth,currentHeight),cvScalar(colorTrack->second.first,colorTrack->second.second.first,colorTrack->second.second.second),1);
 		
 		imshow("Current Trajectory",currentTrajectoryImage);
 	}
@@ -123,7 +123,7 @@ void DatasetCreator::exec()
 			
 			for (vector<pair<Point2f,Point2i> >::const_iterator it = currentTrajectory.begin(); it != currentTrajectory.end(); ++it)
 			{
-				rectangle(datasetImage,Rect(it->first.x - (it->second.x / 2),it->first.y - (it->second.y / 2),it->second.x,it->second.y),cvScalar(colorTrack->second.first,colorTrack->second.second.first,colorTrack->second.second.second),2);
+				rectangle(datasetImage,Rect(it->first.x - (it->second.x / 2),it->first.y - it->second.y,it->second.x,it->second.y),cvScalar(colorTrack->second.first,colorTrack->second.second.first,colorTrack->second.second.second),1);
 			}
 			
 			currentTrajectoryImage = image.clone();
