@@ -60,6 +60,8 @@ DatasetCreator::DatasetCreator(const string& imagePath) : maximumTrajectoryPoint
 			}
 		}
 	}
+	
+	srand(0);
 }
 
 DatasetCreator::~DatasetCreator() {;}
@@ -68,11 +70,16 @@ void DatasetCreator::doMouseCallback(int event, int x, int y)
 {
 	if ((event == EVENT_MOUSEMOVE) && (recording))
 	{
-		currentTrajectory.push_back(Point2f(x,y));
+		int currentWidth, currentHeight;
+		
+		currentWidth = width + (-3 + rand() % 7);
+		currentHeight = height + (-5 + rand() % 11);
+		
+		currentTrajectory.push_back(make_pair(Point2f(x,y),Point2i(currentWidth,currentHeight)));
 		
 		map<int,pair<int,pair<int,int> > >::iterator colorTrack = trackColorMap.find(currentTrackIndex);
 		
-		circle(currentTrajectoryImage,Point(x,y),1,cvScalar(colorTrack->second.first,colorTrack->second.second.first,colorTrack->second.second.second),2);
+		rectangle(currentTrajectoryImage,Rect(x - (currentWidth / 2),y - (currentHeight / 2),currentWidth,currentHeight),cvScalar(colorTrack->second.first,colorTrack->second.second.first,colorTrack->second.second.second),2);
 		
 		imshow("Current Trajectory",currentTrajectoryImage);
 	}
@@ -87,7 +94,13 @@ void DatasetCreator::exec()
 		key = waitKey(0);
 		
 		if (key == 'e') recording = false;
-		else if (key == 'n') recording = true;
+		else if (key == 'n')
+		{
+			width = 20 + (rand() % 20);
+			height = 50 + (rand() % 30);
+			
+			recording = true;
+		}
 		else if (key == 'r')
 		{
 			recording = false;
@@ -108,9 +121,9 @@ void DatasetCreator::exec()
 			
 			map<int,pair<int,pair<int,int> > >::iterator colorTrack = trackColorMap.find(currentTrackIndex);
 			
-			for (vector<Point2f>::const_iterator it = currentTrajectory.begin(); it != currentTrajectory.end(); ++it)
+			for (vector<pair<Point2f,Point2i> >::const_iterator it = currentTrajectory.begin(); it != currentTrajectory.end(); ++it)
 			{
-				circle(datasetImage,Point(it->x,it->y),1,cvScalar(colorTrack->second.first,colorTrack->second.second.first,colorTrack->second.second.second),2);
+				rectangle(datasetImage,Rect(it->first.x - (it->second.x / 2),it->first.y - (it->second.y / 2),it->second.x,it->second.y),cvScalar(colorTrack->second.first,colorTrack->second.second.first,colorTrack->second.second.second),2);
 			}
 			
 			currentTrajectoryImage = image.clone();
@@ -137,7 +150,7 @@ void DatasetCreator::generateXmlDataset()
 {
 	if (allTrajectories.empty()) return;
 	
-	pair<int,Point2f> allTrajectoryPoints[maximumTrajectoryPoints][allTrajectories.size()];
+	pair<int,pair<Point2f,Point2i> > allTrajectoryPoints[maximumTrajectoryPoints][allTrajectories.size()];
 	ofstream datasetXml;
 	unsigned int i, j;
 	
@@ -145,18 +158,18 @@ void DatasetCreator::generateXmlDataset()
 	{
 		for (j = 0; j < allTrajectories.size(); ++j)
 		{
-			allTrajectoryPoints[i][j] = make_pair(-1,Point2f(-1,-1));
+			allTrajectoryPoints[i][j] = make_pair(-1,make_pair(Point2f(-1,-1),Point2i(-1,-1)));
 		}
 	}
 	
 	i = 0;
 	j = 0;
 	
-	for (vector<pair<int,vector<Point2f> > >::const_iterator it = allTrajectories.begin(); it != allTrajectories.end(); ++it, ++j)
+	for (vector<pair<int,vector<pair<Point2f,Point2i> > > >::const_iterator it = allTrajectories.begin(); it != allTrajectories.end(); ++it, ++j)
 	{
 		i = 0;
 		
-		for (vector<Point2f>::const_iterator it2 = it->second.begin(); it2 != it->second.end(); ++it2, ++i)
+		for (vector<pair<Point2f,Point2i> >::const_iterator it2 = it->second.begin(); it2 != it->second.end(); ++it2, ++i)
 		{
 			allTrajectoryPoints[i][j] = make_pair(it->first,*it2);
 		}
@@ -193,7 +206,8 @@ void DatasetCreator::generateXmlDataset()
 			if (allTrajectoryPoints[i][j].first != -1)
 			{
 				datasetXml << "         <object id=\"" << allTrajectoryPoints[i][j].first << "\">" << endl;
-				datasetXml << "            <box xc=\"" << allTrajectoryPoints[i][j].second.x << "\" yc=\"" << allTrajectoryPoints[i][j].second.y << "\"/>" << endl;
+				datasetXml << "            <box h=\"" << allTrajectoryPoints[i][j].second.second.y << "\" w=\"" << allTrajectoryPoints[i][j].second.second.x
+						   << "\" xc=\"" << allTrajectoryPoints[i][j].second.first.x << "\" yc=\"" << allTrajectoryPoints[i][j].second.first.y << "\"/>" << endl;
 				datasetXml << "         </object>" << endl;
 			}
 		}

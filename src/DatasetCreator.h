@@ -9,12 +9,12 @@
 class DatasetCreator
 {
 	private:
-		std::vector<std::pair<int,std::vector<cv::Point2f> > > allTrajectories;
-		std::vector<cv::Point2f> currentTrajectory;
+		std::vector<std::pair<int,std::vector<std::pair<cv::Point2f,cv::Point2i> > > > allTrajectories;
+		std::vector<std::pair<cv::Point2f,cv::Point2i> > currentTrajectory;
 		std::map<int,std::pair<int,std::pair<int,int> > > trackColorMap;
 		cv::Mat currentTrajectoryImage, datasetImage, image;
 		unsigned int maximumTrajectoryPoints;
-		int currentTrackIndex;
+		int currentTrackIndex, height, width;
 		bool recording;
 		
 		static void mouseCallback(int event, int x, int y, int, void* datasetCreatorInstance);
