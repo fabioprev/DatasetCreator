@@ -9,6 +9,7 @@ using namespace cv;
 DatasetCreator::DatasetCreator(const string& imagePath) : maximumTrajectoryPoints(0), currentTrackIndex(1), recording(false)
 {
 	Mat commands;
+	int offset;
 	
 	image = imread(imagePath);
 	
@@ -22,16 +23,21 @@ DatasetCreator::DatasetCreator(const string& imagePath) : maximumTrajectoryPoint
 	currentTrajectoryImage = image.clone();
 	datasetImage = image.clone();
 	
+	commands = Mat::zeros(135,497,CV_8UC3);
+	
 	namedWindow("Current Trajectory",1);
 	namedWindow("Dataset",1);
 	namedWindow("Commands",1);
 	
 	setMouseCallback("Current Trajectory",DatasetCreator::mouseCallback,this);
 	
-	imshow("Current Trajectory",currentTrajectoryImage);
-	imshow("Dataset",datasetImage);
+	offset = 50;
 	
-	commands = Mat::zeros(135,497,CV_8UC3);
+	imshow("Current Trajectory",currentTrajectoryImage);
+	moveWindow("Current Trajectory",offset,commands.rows * 1.5);
+	
+	imshow("Dataset",datasetImage);
+	moveWindow("Dataset",currentTrajectoryImage.cols + offset + 1,commands.rows * 1.5);
 	
 	putText(commands,"'e':",Point(10,20),FONT_HERSHEY_SIMPLEX,0.5,CV_RGB(255,255,0));
 	putText(commands,"'n':",Point(10,45),FONT_HERSHEY_SIMPLEX,0.5,CV_RGB(255,255,0));
@@ -206,8 +212,10 @@ void DatasetCreator::generateXmlDataset()
 			if (allTrajectoryPoints[i][j].first != -1)
 			{
 				datasetXml << "         <object id=\"" << allTrajectoryPoints[i][j].first << "\">" << endl;
-				datasetXml << "            <box h=\"" << allTrajectoryPoints[i][j].second.second.y << "\" w=\"" << allTrajectoryPoints[i][j].second.second.x
-						   << "\" xc=\"" << allTrajectoryPoints[i][j].second.first.x << "\" yc=\"" << allTrajectoryPoints[i][j].second.first.y << "\"/>" << endl;
+				datasetXml << "            <box h=\"" << allTrajectoryPoints[i][j].second.second.y << "\" w=\"" << allTrajectoryPoints[i][j].second.second.x << "\""
+						   << " xc=\"" << allTrajectoryPoints[i][j].second.first.x << "\" yc=\"" << allTrajectoryPoints[i][j].second.first.y << "\""
+						   << " hxc=\"" << allTrajectoryPoints[i][j].second.first.x << "\" hyc=\"" << (allTrajectoryPoints[i][j].second.first.y - allTrajectoryPoints[i][j].second.second.y) << "\""
+						   << " b=\"" << allTrajectoryPoints[i][j].second.first.x << "\"/>" << endl;
 				datasetXml << "         </object>" << endl;
 			}
 		}
