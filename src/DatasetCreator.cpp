@@ -1,5 +1,6 @@
 #include "DatasetCreator.h"
 #include <opencv2/highgui/highgui.hpp>
+#include <opencv2/imgproc/imgproc.hpp>
 #include <sys/stat.h>
 #include <fstream>
 

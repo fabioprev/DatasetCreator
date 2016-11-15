@@ -26,7 +26,7 @@ endif (CMAKE_BUILD_TYPE STREQUAL "DEBUG")
 
 set(EXECUTABLE_OUTPUT_PATH ../bin)
 
-find_package(OpenCV 2.4.2 REQUIRED)
+find_package(OpenCV REQUIRED)
 
 file(GLOB_RECURSE DatasetCreator_src "*.cpp")
 

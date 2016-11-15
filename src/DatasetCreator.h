@@ -2,6 +2,7 @@
 
 #include <opencv2/core/core.hpp>
 #include <iostream>
+#include <map>
 
 #define ERR(x)  std::cerr << "\033[22;31;1m" << x << "\033[0m";
 #define INFO(x) std::cerr << "\033[22;37;1m" << x << "\033[0m";
